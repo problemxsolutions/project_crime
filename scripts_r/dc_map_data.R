@@ -101,6 +101,9 @@ map_data_geojson <- c(
 )
 
 dir_destination <- '../data/map_data/'
+if(!dir.exists(dir_destination))
+  dir.create(dir_destination)
+
 for(i in map_data_geojson){
   temp_url <- paste0(base_url, i)
   
