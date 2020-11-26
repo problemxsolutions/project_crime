@@ -3,7 +3,7 @@
 # RStudio: Version 1.3.1093
 
 # For the full tutorial, please reference URL: 
-# https://problemxsolutions.com/uncategorized/criminal-analysis-data-search-part-1
+# https://problemxsolutions.com/project/crime/criminal-analysis-data-search-part-1
 
 # These are the resources for Washington DC spatial files (shapefile, geoJSON)
 # URL: ttps://opendata.dc.gov/
