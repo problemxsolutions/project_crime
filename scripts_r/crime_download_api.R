@@ -13,6 +13,10 @@ library(magrittr)
 library(jsonlite)
 library(geojsonR)
 
+dir_destination <- '../data/crime/'
+if(!dir.exists(dir_destination))
+  dir.create(dir_destination)
+
 # Assess the URLs and reduce to unique portions
 
 # ****************************************************************

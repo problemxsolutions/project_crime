@@ -8,6 +8,10 @@
 library(tidyverse)
 library(magrittr)
 
+dir_destination <- '../data/employment/'
+if(!dir.exists(dir_destination))
+  dir.create(dir_destination)
+
 # ******************************************************
 # DC Department of Employment Services.
 # This will provide current information at specific locations in the city.

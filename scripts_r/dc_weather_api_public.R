@@ -8,6 +8,10 @@
 library(tidyverse)
 library(magrittr)
 
+dir_destination <- '../data/weather/'
+if(!dir.exists(dir_destination))
+  dir.create(dir_destination)
+
 # ******************************************************
 # DC Weather Data.
 # This will provide current information at specific locations in the city.

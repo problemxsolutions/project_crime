@@ -55,7 +55,7 @@ library(magrittr)
 library(DBI)
 # library(RPostgreSQL)
 # Connect to desired PostgreSQL database
-db <- 'project_crime'  # databast name to connect to
+db <- 'project_crime'  # database name to connect to
 host_db <- 'localhost' # Where is db being hosted? default server/host is localhost
 db_port <- '5432'  # Which port is the server listening to? default port number for PostgreSQL is 5432
 db_user <- 'analyst'  
@@ -148,4 +148,6 @@ print("Crime data loaded into Project_Crime database")
 # ******************************************************************************
 # List all the tables currently in the connected database
 dbListTables(con)
+
+dbDisconnect(conn = con)
 
