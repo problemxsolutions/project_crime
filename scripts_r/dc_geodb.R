@@ -13,26 +13,15 @@ library(DBI)
 library(rpostgis)
 library(sf)
 
-# Connect to desired PostgreSQL database
-db <- 'project_crime'  # databast name to connect to
-host_db <- 'localhost' # Where is db being hosted? default server/host is localhost
-db_port <- '5432'  # Which port is the server listening to? default port number for PostgreSQL is 5432
-db_user <- 'analyst'  
-db_password <- 'mypassword'
-
-con <- dbConnect(RPostgres::Postgres(), 
-                 dbname = db, 
-                 host=host_db,
-                 port=db_port,
-                 user=db_user, 
-                 password=db_password)  
+# Source project functions:
+source('~/ProblemXSolutions.com/DataProjects/DC_Crime/project_crime/scripts_r/project_functions_db.R')
 
 # Check if database extension is installed.
 # I did have to alter my analyst role in psql to superuser to do this on 
 # my initial use, but afterward, it wasn't needed to have superuser privileges. 
 # psql: 
 # project_crime=# alter role analyst superuser; 
-pgPostGIS(conn = con)
+pgPostGIS(conn = pg_connect())
 
 # After conducting the check, I reverted the analyst role back to nosuperuser
 # project_crime=# alter role analyst nosuperuser; 
@@ -44,7 +33,7 @@ ward_data <- 'https://opendata.arcgis.com/datasets/0ef47379cbae44e88267c01eaec2f
 filename <- '../data/map_data/ward_data.json'
 download.file(ward_data, filename)
 
-dbListTables(conn = con)
+dbListTables(conn = pg_connect())
 
 data <- st_read(dsn = filename) 
 
@@ -52,21 +41,21 @@ ggplot(data = data)+
   geom_sf(aes(fill= as.numeric(POP_2011_2015))) +
   geom_sf_label(aes(label = WARD))
 
-sf::dbWriteTable(conn = con, 
+sf::dbWriteTable(conn = pg_connect(), 
                  name = "ward_polygons", 
                  value = data, 
                  overwrite = TRUE,
                  driver = RPostgres::Postgres())
 
 # Check the current list of Tables to verify table was created
-dbListTables(conn = con)
+dbListTables(conn = pg_connect())
 
-pgListGeom(conn = con, geog = TRUE)
+pgListGeom(conn = pg_connect(), geog = TRUE)
 
-rpostgis::dbTableInfo(conn = con, name = 'ward_polygons')
-rpostgis::pgGetGeom(conn = con, name = 'ward_polygons', geom = "geometry")
+rpostgis::dbTableInfo(conn = pg_connect(), name = 'ward_polygons')
+rpostgis::pgGetGeom(conn = pg_connect(), name = 'ward_polygons', geom = "geometry")
 
-dbRemoveTable(conn = con, name = "ward_polygons")
+dbRemoveTable(conn = pg_connect(), name = "ward_polygons")
 # **********************************************************************************************
 # End test case
 # **********************************************************************************************
@@ -87,16 +76,16 @@ for(i in map_data_files){
   data <- st_read(dsn = paste0(map_data_path, i))
   
   # Load the data into the database
-  sf::dbWriteTable(conn = con,
+  sf::dbWriteTable(conn = pg_connect(),
                    name = table_name,
                    value = data, 
                    driver = RPostgres::Postgres())
   print("Data Loaded...Table Created...Complete!")
 }
 rm(data, table_name, map_data_path, map_data_files)
-dbListTables(conn = con)
+dbListTables(conn = pg_connect())
 
-pgListGeom(conn = con, geog = TRUE)
+pgListGeom(conn = pg_connect(), geog = TRUE)
 
 # **********************************************************************************************
 # Load Permit Map Data
@@ -114,16 +103,16 @@ for(i in map_data_files){
   # Read in the GeoJSON data using the sf::st_read method
   data <- st_read(dsn = paste0(dir_destination, i))
   
-  if(table_name %in% dbListTables(conn = con)){
+  if(table_name %in% dbListTables(conn = pg_connect())){
     # Load the data into the database
-    sf::dbWriteTable(conn = con,
+    sf::dbWriteTable(conn = pg_connect(),
                      name = table_name,
                      value = data,
                      driver = RPostgres::Postgres(),
                      append = T)
   }else{
     # Load the data into the database
-    sf::dbWriteTable(conn = con,
+    sf::dbWriteTable(conn = pg_connect(),
                      name = table_name,
                      value = data,
                      driver = RPostgres::Postgres())
@@ -132,6 +121,6 @@ for(i in map_data_files){
   print("Data Loaded...Table Created...Complete!")
 }
 rm(i, j, data, table_name, map_data_path, map_data_files)
-dbListTables(conn = con)
+dbListTables(conn = pg_connect())
 
-pgListGeom(conn = con, geog = TRUE)
+pgListGeom(conn = pg_connect(), geog = TRUE)
