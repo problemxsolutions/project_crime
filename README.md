@@ -33,3 +33,6 @@ These two post describe creating a PostgreSQL/PostGIS database to store all the 
 
 ### PostGIS
 * https://problemxsolutions.com/project/crime/criminal-analysis-data-storage-part-2/
+
+### Elastic Stack
+* coming soon "Data Storage (part 3)"
