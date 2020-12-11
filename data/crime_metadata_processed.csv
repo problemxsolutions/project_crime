@@ -1,0 +1,27 @@
+Label,Definition,Definition_Source,Domain_Values,Unrepresentable_Domain
+CCN,Criminal Complaint Number,MPD,,A unique identifier assigned by MPD to each incident report.
+REPORT_DAT,Crime Report Date,MPD,,"The date the offense was reported to MPD, which may be later than the date the offense actually occurred."
+SHIFT,MPD Shift,MPD,,"MPD member's tour of duty associated with the time the report was taken. Day shift generally runs between 0700 and 1500 (military time); evening shift between 1500 and 2300, and midnight shift between 2300 and 0700. If the shift is unknown, the field will say ""UNK""."
+METHOD,Type of weapon used to commit crime,OCTO,,
+OFFENSE,Crime Offense,MPD,,"Crime Offense. For crime offense definitions, please visit http://crimemap.dc.gov/CrimeDefinitions.aspx."
+BLOCK,Black Name,OCTO,,Block Name bases on its Theoretical Address Range from MAR Geocoder
+XBLOCK,Block X Coordinate,OCTO,,"Block X coordinate (centroid) of crime incident from MAR Geocoder, as reference to the Maryland State Plane NAD 1983 Meters."
+YBLOCK,Block Y Coordinate,OCTO,,"Block Y coordinate (centroid) of crime incident from MAR Geocoder, as reference to the Maryland State Plane NAD 1983 Meters."
+WARD,Distric Ward Identifier,OCTO,,Ward ID from from MAR Geocoder
+ANC,Advisory Neighborhood Commission Identifier,OCTO,,ANC ID from MAR Geocoder
+DISTRICT,Police District,OCTO,,Police district from MAR Geocoder
+PSA,Police Service Areas,OCTO,,PSA ID from from MAR Geocoder
+NEIGHBORHOOD_CLUSTER,Neighborhood Cluster,OCTO,,Neighborhood Cluster from MAR Geocoder
+BLOCK_GROUP,Census Block Group,OCTO,,Cenus block group from MAR Geocoder
+CENSUS_TRACT,Census Track,OCTO,,Census track from MAR Geocoder
+VOTING_PRECINCT,Voting Precinct,OCTO,,Voting precinct from MAR Geocoder
+XCOORD,X Coordinate,OCTO,,"X Coordinate of crime incident from MAR Geocoder, as reference to the Maryland State Plane NAD 1983 Meters"
+YCOORD,X Coordinate,OCTO,,"Y Coordinate of crime incident from MAR Geocoder, as reference to the Maryland State Plane NAD 1983 Meters"
+LATITUDE,Latitude,OCTO,,Latitude (decimal degrees) of Crime Incident from MAR Geocoder
+LONGITUDE,Longitude,OCTO,,Longitude (decimal degrees) of Crime Incident from MAR Geocoder
+BID,Business Improvement Districts,OCTO,,
+START_DATE,Crime Start Date,OCTO,,Crime incident start date and time
+END_DATE,Crime End Date,OCTO,,Crime incident end date and time
+OBJECTID,Internal feature number.,Esri,,Sequential unique whole numbers that are automatically generated.
+SE_ANNO_CAD_DATA,,,,
+SHAPE,Feature geometry.,Esri,,Coordinates defining the features.
