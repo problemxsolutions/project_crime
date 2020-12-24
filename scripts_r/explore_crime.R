@@ -474,6 +474,26 @@ remove(query_date_parameters, crime_table_summaries_dates,
        end_date_profile, report_date_profile)
 
 # **********************************************************************************************
+# Compare Start Date vs Report Date
+
+query_string <- 
+  paste0(
+    'select ',
+    'date_part(\'year\', to_date("START_DATE", \'YYYY/MM/DD\')) as sd_yr, ',
+    'date_part(\'year\', to_date("REPORT_DAT", \'YYYY/MM/DD\')) as rd_yr, ',
+    'count(*) as cnt ',
+    'from crime ',
+    'group by sd_yr, rd_yr ',
+    'order by 1, 2;'
+  )
+
+comparison_results <- 
+  RPostgres::dbGetQuery(conn = pg_connect(),
+                        statement = query_string)
+
+comparison_results %>% 
+  spread(data = ., key = rd_yr, value = cnt, fill = 0)
+# **********************************************************************************************
 # PART IV : Spatial Groupings
 # Can we create a unique table for spatial aggregation?
 # If there are missing values, can we fill in the information?
@@ -481,3 +501,7 @@ remove(query_date_parameters, crime_table_summaries_dates,
 # During new crime table creation, reduce spatial columns and 
 # replace with unique id related to unique spatial aggregation table
 
+# THIS SECTION IS ON HOLD AND MAY NOT BE COMPLETED
+#
+#
+#
