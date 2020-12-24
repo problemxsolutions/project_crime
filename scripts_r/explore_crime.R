@@ -277,6 +277,7 @@ remove(column_sizes_admin, query_record_parameters, query_ccn, query_ccn_dups,
 # Create table for Date/Time to parse out drill down/roll up values.
 query_date_parameters <- c('START_DATE', 'END_DATE', 'REPORT_DAT')
 
+# SQL QUERY TO THE DATABASE
 crime_table_summaries_dates <-
   lapply(X = query_date_parameters,
          FUN = function(X){
@@ -288,6 +289,26 @@ crime_table_summaries_dates <-
            RPostgres::dbGetQuery(conn = pg_connect(),
                                  statement = query_string)
          })
+
+# ALTERNATIVE: NOT USING PARAMETERS
+# start_date_profile_1 <-
+#   crime %>%
+#   group_by(START_DATE) %>%
+#   summarise(CNT = n()) #%>%
+#   collect()
+
+# end_date_profile <-
+#   crime %>%
+#   group_by(END_DATE) %>%
+#   summarise(CNT = n()) %>%
+#   collect()
+# 
+# report_date_profile <-
+#   crime %>%
+#   group_by(REPORT_DAT) %>%
+#   summarise(CNT = n()) %>%
+#   collect()
+
 
 column_sizes_dates <-
   sapply(1:length(crime_table_summaries_dates),
@@ -396,6 +417,13 @@ end_date_profile  %<>%
          weeknum = lubridate::week(END_DATE),
          quarter = lubridate::quarter(END_DATE)) %>% 
   mutate(hour = datetime %>% lubridate::hour())
+
+# Yearly aggregate
+end_date_profile %>% 
+  group_by(year) %>% 
+  arrange(year) %>% 
+  summarise(cnt = n()) %>% 
+  qplot(data = ., x = as.character(year), y = cnt)
 
 # ********************************************************************************
 # Report Date Profiling
