@@ -182,6 +182,8 @@ for(i in 1: length(plot_list)){
 }
 
 # we could've also put the ggsave function into our original `lapply` loop rather than creating a new
+remove(query_parameters, crime_anc, test_df, 
+       column_sizes, crime_table_summaries, plot_list)
 
 # **********************************************************************************************
 # PART II : Record ID, CCN and Date Review
@@ -217,7 +219,6 @@ column_sizes_admin <-
 # 2 405086 OCTO_RECORD_ID
 # 3 404964 CCN           
 
-
 ccn_dups <- 
   crime_table_summaries_admin[[3]] %>% 
   tibble %>% 
@@ -251,18 +252,6 @@ recid_ccn_13132784_all <-
   RPostgres::dbGetQuery(conn = pg_connect(),
                         statement = query_ccn_all)
 
-# Quick look at the events
-# select 
-#   "CCN" as ccn, 
-#   "OFFENSE" as offense, 
-#   count(*) as cnt 
-# from crime 
-# inner join (select * from view_gt2_recid_per_ccn) as tb2 
-#   on "CCN" = ccn 
-# group by "CCN", offense 
-# order by cnt desc;
-
-
 # I created a view in the database called `view_gt2_recid_per_ccn` that is equivalent to data in `ccn_dups` (above)
 query_ccn_dups <- 
   paste0('SELECT ',
@@ -279,9 +268,11 @@ ccn_dups_all <-
   RPostgres::dbGetQuery(conn = pg_connect(),
                         statement = query_ccn_dups)
 
-
+remove(column_sizes_admin, query_record_parameters, query_ccn, query_ccn_dups,
+       recid_ccn_13132784, recid_ccn_13132784_all, ccn_dups, ccn_dups_all, 
+       crime_table_summaries, crime_table_summaries_admin)
 # **********************************************************************************************
-# PART III : Spatial Groupings
+# PART III : Temporal Groupings
 # The fields with Date/Time.
 # Create table for Date/Time to parse out drill down/roll up values.
 query_date_parameters <- c('START_DATE', 'END_DATE', 'REPORT_DAT')
@@ -478,7 +469,10 @@ dbWriteTable(conn = pg_connect(),
 # Check to see if the tables are in the database
 dbListTables(pg_connect())
 
- 
+remove(query_date_parameters, crime_table_summaries_dates, 
+       start_date_profile, start_date_profile_2009_2020, 
+       end_date_profile, report_date_profile)
+
 # **********************************************************************************************
 # PART IV : Spatial Groupings
 # Can we create a unique table for spatial aggregation?
@@ -486,3 +480,4 @@ dbListTables(pg_connect())
 
 # During new crime table creation, reduce spatial columns and 
 # replace with unique id related to unique spatial aggregation table
+
