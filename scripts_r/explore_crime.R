@@ -190,29 +190,295 @@ for(i in 1: length(plot_list)){
 # If there are duplicate records, create a new table de-duplicating 
 # records to reduce over counting
 # **********************************************************************************************
-query_record_parameters <- 
-  table_col_names[ c('OBJECTID', 'OCTO_RECORD_ID', 'CCN') ]
+query_record_parameters <- c('OBJECTID', 'OCTO_RECORD_ID', 'CCN')
 
-query_string_CCN_RecID <- 
+crime_table_summaries_admin <-
+  lapply(X = query_record_parameters,
+         FUN = function(X){
+           query_string <- paste0('SELECT "', X, '", ',
+                                  'COUNT(*) as CNT ',
+                                  'FROM ', db_table, ' ',
+                                  'GROUP BY "', X,'";')
+           # print(query_string)
+           RPostgres::dbGetQuery(conn = pg_connect(),
+                                 statement = query_string)
+         })
+
+column_sizes_admin <-
+  sapply(1:length(crime_table_summaries_admin),
+         function(x) nrow(crime_table_summaries_admin[[x]])) %>%
+  tibble() %>%
+  mutate(names = query_record_parameters)
+
+# # A tibble: 3 x 2
+# . names         
+#    <int> <chr>         
+# 1 405086 OBJECTID      
+# 2 405086 OCTO_RECORD_ID
+# 3 404964 CCN           
+
+
+ccn_dups <- 
+  crime_table_summaries_admin[[3]] %>% 
+  tibble %>% 
+  filter(cnt > 1) %>% 
+  arrange(desc(cnt))
+  
+# Query specifically for the all OCTO_RECORD_ID pertaining to CCN = 13132784
+query_ccn <- paste0('SELECT "OCTO_RECORD_ID" ',
+                    'FROM crime ',
+                    'WHERE \'13132784\' = "CCN";')
+
+recid_ccn_13132784 <- 
+  RPostgres::dbGetQuery(conn = pg_connect(),
+                        statement = query_ccn)
+
+# Query specifically for the full records pertaining to CCN = 13132784
+query_ccn_all <- paste0('SELECT * ',
+                    'FROM crime ',
+                    'WHERE \'13132784\' = "CCN";')
+
+recid_ccn_13132784_all <- 
+  RPostgres::dbGetQuery(conn = pg_connect(),
+                        statement = query_ccn_all)
+
+# Check the distinct values minus the two fields with known uniqueness
+query_ccn_dups <- paste0('SELECT * ',
+                        'FROM crime ',
+                        'WHERE \'13132784\' = "CCN";')
+
+recid_ccn_13132784_all <- 
+  RPostgres::dbGetQuery(conn = pg_connect(),
+                        statement = query_ccn_all)
+
+# Quick look at the events
+# select 
+#   "CCN" as ccn, 
+#   "OFFENSE" as offense, 
+#   count(*) as cnt 
+# from crime 
+# inner join (select * from view_gt2_recid_per_ccn) as tb2 
+#   on "CCN" = ccn 
+# group by "CCN", offense 
+# order by cnt desc;
+
+
+# I created a view in the database called `view_gt2_recid_per_ccn` that is equivalent to data in `ccn_dups` (above)
+query_ccn_dups <- 
   paste0('SELECT ',
-         '"', X, '", ',
-         'COUNT(*) as CNT ',
+         '"CCN" as ccn, ',
+         '"OFFENSE" as offense, ',
+         'COUNT(*) as cnt ',
          'FROM ', db_table, ' ',
-         'GROUP BY "', X,'";')
+         'inner join (select * from view_gt2_recid_per_ccn) as tb2 ',
+         'on "CCN" = ccn ',
+         'GROUP BY "CCN", offense ',
+         'ORDER BY cnt desc;')
 
-RPostgres::dbGetQuery(conn = pg_connect(),
-                      statement = query_string)
+ccn_dups_all <- 
+  RPostgres::dbGetQuery(conn = pg_connect(),
+                        statement = query_ccn_dups)
 
 
 # **********************************************************************************************
 # PART III : Spatial Groupings
 # The fields with Date/Time.
 # Create table for Date/Time to parse out drill down/roll up values.
-query_date_parameters <- 
-  table_col_names[ c('START_DATE', 'END_DATE', 'REPORT_DAT') ]
+query_date_parameters <- c('START_DATE', 'END_DATE', 'REPORT_DAT')
+
+crime_table_summaries_dates <-
+  lapply(X = query_date_parameters,
+         FUN = function(X){
+           query_string <- paste0('SELECT "', X,'", ',
+                                  'COUNT(*) as CNT ',
+                                  'FROM ', db_table, ' ',
+                                  'GROUP BY "', X,'";')
+           # print(query_string)
+           RPostgres::dbGetQuery(conn = pg_connect(),
+                                 statement = query_string)
+         })
+
+column_sizes_dates <-
+  sapply(1:length(crime_table_summaries_dates),
+         function(x) nrow(crime_table_summaries_dates[[x]])) %>%
+  tibble() %>%
+  mutate(names = query_date_parameters)
+
+column_sizes_dates %>% 
+  mutate(percent_total = column_sizes_dates$. / 405086,
+         percent_unique_ccn = column_sizes_dates$. / 404964)
+
+# ********************************************************************************
+# Start Date Profiling
+start_date_profile <- 
+  crime_table_summaries_dates[[1]] %>%
+  arrange(desc(cnt)) %>% 
+  tibble
+
+# Check formatting
+start_date_profile  %>% select(1) %>% pull %>% str_detect("-") %>% any()
+start_date_profile  %>% select(1) %>% pull %>% is.na() %>% any()
+start_date_profile  %>% select(1) %>% pull %>% is.null() %>% any()
+
+# Parse and extract date/time information
+start_date_profile  %<>% 
+  mutate(datetime = lubridate::ymd_hms(START_DATE),
+         date = lubridate::date(START_DATE),
+         year = lubridate::year(START_DATE),
+         month = lubridate::month(START_DATE, label = T),
+         day = lubridate::day(START_DATE),
+         weekday = lubridate::wday(START_DATE, label = T),
+         weeknum = lubridate::week(START_DATE),
+         quarter = lubridate::quarter(START_DATE)) %>% 
+  mutate(hour = datetime %>% lubridate::hour())
+
+# Yearly aggregates before the project timeframe
+start_date_profile  %>% 
+  filter(year < 2009) %>% 
+  group_by(year) %>% 
+  arrange(year) %>% 
+  summarise(cnt = n()) %>% 
+  view()
+
+# Total number of items outside the project timeframe
+start_date_profile  %>% 
+  filter(year < 2009) %>% 
+  nrow()
+
+# Yearly aggregates during the project timeframe
+start_date_profile  %>% 
+  filter(year >= 2009) %>% 
+  group_by(year) %>% 
+  arrange(year) %>% 
+  summarise(cnt = n()) %>% 
+  view()
+
+start_date_profile_2009_2020 <- 
+  start_date_profile  %>% 
+  filter(year >= 2009)  
+
+# Monthly aggregates during the project timeframe
+start_date_profile_2009_2020 %>% 
+  group_by(month) %>% 
+  summarise(cnt = n()) %>% 
+  qplot(data = ., x = month, y = cnt)
 
 
+# Day aggregates during the project timeframe
+start_date_profile_2009_2020 %>% 
+  group_by(day) %>% 
+  summarise(cnt = n()) %>% 
+  qplot(data = ., x = day, y = cnt)
 
+# Day aggregates during the project timeframe
+start_date_profile_2009_2020 %>% 
+  group_by(weekday) %>% 
+  summarise(cnt = n()) %>% 
+  qplot(data = ., x = weekday, y = cnt)
+
+# Hour aggregates during the project timeframe
+start_date_profile_2009_2020 %>% 
+  group_by(hour) %>% 
+  summarise(cnt = n()) %>% 
+  qplot(data = ., x = hour, y = cnt)
+
+# ********************************************************************************
+# End Date Processing
+end_date_profile <- 
+  crime_table_summaries_dates[[2]] %>%
+  arrange(desc(cnt)) %>% 
+  tibble
+
+# Check formatting
+end_date_profile  %>% select(1) %>% pull %>% str_detect("-") %>% any()
+end_date_profile  %>% select(1) %>% pull %>% is.na() %>% any()
+end_date_profile  %>% select(1) %>% pull %>% is.null() %>% any()
+
+# Parse and extract date/time information
+end_date_profile  %<>% 
+  mutate(datetime = lubridate::ymd_hms(END_DATE),
+         date = lubridate::date(END_DATE),
+         year = lubridate::year(END_DATE),
+         month = lubridate::month(END_DATE, label = T),
+         day = lubridate::day(END_DATE),
+         weekday = lubridate::wday(END_DATE, label = T),
+         weeknum = lubridate::week(END_DATE),
+         quarter = lubridate::quarter(END_DATE)) %>% 
+  mutate(hour = datetime %>% lubridate::hour())
+
+# ********************************************************************************
+# Report Date Profiling
+report_date_profile <- 
+  crime_table_summaries_dates[[3]] %>%
+  arrange(desc(cnt)) %>% 
+  tibble
+
+# Check formatting
+report_date_profile %>% select(1) %>% pull %>% str_detect("-") %>% any()
+report_date_profile %>% select(1) %>% pull %>% is.na() %>% any()
+report_date_profile %>% select(1) %>% pull %>% is.null() %>% any()
+
+# Parse and extract date/time information
+report_date_profile  %<>% 
+  mutate(datetime = lubridate::ymd_hms(REPORT_DAT),
+         date = lubridate::date(REPORT_DAT),
+         year = lubridate::year(REPORT_DAT),
+         month = lubridate::month(REPORT_DAT, label = T),
+         day = lubridate::day(REPORT_DAT),
+         weekday = lubridate::wday(REPORT_DAT, label = T),
+         weeknum = lubridate::week(REPORT_DAT),
+         quarter = lubridate::quarter(REPORT_DAT)) %>% 
+  mutate(hour = datetime %>% lubridate::hour())
+
+
+# Yearly aggregate
+report_date_profile  %>% 
+  group_by(year) %>% 
+  arrange(year) %>% 
+  summarise(cnt = n()) %>% 
+  qplot(data = ., x = year, y = cnt)
+
+
+# **********************************************************************************************
+# Load Date Tables into the database
+# **********************************************************************************************
+# Before loading into the database, I'll create a primary key on each table.
+# 1) Drop the cnt field
+# 2) Sort the table by date
+# 3) Create the unique ID
+# 4) Load into the Database
+
+start_date_profile %<>% 
+  select(-cnt) %>% 
+  arrange(date) %>% 
+  rowid_to_column(var = "date_id")
+
+dbWriteTable(conn = pg_connect(),
+             name = "crime_start_date",  
+             value = start_date_profile %>% as.data.frame(.))
+
+end_date_profile %<>% 
+  select(-cnt) %>% 
+  arrange(date) %>% 
+  rowid_to_column(var = "date_id")
+
+dbWriteTable(conn = pg_connect(),
+             name = "crime_end_date",  
+             value = end_date_profile %>% as.data.frame(.))
+
+report_date_profile %<>% 
+  select(-cnt) %>% 
+  arrange(date) %>% 
+  rowid_to_column(var = "date_id")
+
+dbWriteTable(conn = pg_connect(),
+             name = "crime_report_date",  
+             value = report_date_profile %>% as.data.frame(.))
+
+# Check to see if the tables are in the database
+dbListTables(pg_connect())
+
+ 
 # **********************************************************************************************
 # PART IV : Spatial Groupings
 # Can we create a unique table for spatial aggregation?
