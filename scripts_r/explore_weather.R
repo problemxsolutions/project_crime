@@ -3,27 +3,34 @@
 # RStudio: Version 1.3.1093
 
 # For the full tutorial, please reference URL: 
-# https://problemxsolutions.com/project/crime/
+# https://problemxsolutions.com/data-project/crime/criminal-analysis-data-exploration-part-#/
 
 library(tidyverse)
 library(magrittr)
 library(DBI)
 # library(RPostgreSQL)
 
+# Source project functions:
+source('~/ProblemXSolutions.com/DataProjects/DC_Crime/project_crime/scripts_r/project_functions_db.R')
 
-# Connect to desired PostgreSQL database
-db <- 'project_crime'  # database name to connect to
-host_db <- 'localhost' # Where is db being hosted? default server/host is localhost
-db_port <- '5432'  # Which port is the server listening to? default port number for PostgreSQL is 5432
-db_user <- 'analyst'  
-db_password <- 'mypassword'
-
-con <- dbConnect(RPostgres::Postgres(), 
-                 dbname = db, 
-                 host=host_db,
-                 port=db_port,
-                 user=db_user, 
-                 password=db_password)  
+# create the graphics output directory for saving visualizations
+dir_destination <- '../graphics/data_explore/weather_graphics/'
+if(!dir.exists(dir_destination))
+  dir.create(dir_destination)
 
 
-dbListTables(conn = con)
+# Display all the tables in the connected database
+dbListTables(conn = pg_connect())
+# **************************************************************************************************
+
+# Assign the table name to a variable
+db_tables <- c('weather', 'temperature', 'moon_phase', 'sunrise_sunset')
+
+# Get the column names for each table
+table_col_names_list <- list()
+db_data_list <- list()
+for (i in 1:length(db_tables)){
+  table_col_names_list[[i]] <- dbListFields(conn = pg_connect(), name = db_tables[i])
+  db_data_list[[i]] <- tbl(pg_connect(), db_tables[i])
+}
+
