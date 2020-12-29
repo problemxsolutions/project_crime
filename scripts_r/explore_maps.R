@@ -255,6 +255,7 @@ ggsave(filename = paste0(dir_destination, "dc_zipcode_polygons.png"),
        dpi = "screen", 
        scale = 1.5)
 
+# *************************************************************
 # Zipcode: Uninsured Population
 ggplot(poly_plot_data) +
   geom_sf(aes(fill =  UNINSURED_POPULATION)) +
@@ -267,6 +268,7 @@ ggsave(filename = paste0(dir_destination, "dc_zipcode_polygons_uninsured_populat
        dpi = "screen", 
        scale = 1.5)
 
+# *************************************************************
 # Zipcode: MEDICAID_RECIPIENT
 ggplot(poly_plot_data) +
   geom_sf(aes(fill =  MEDICAID_RECIPIENT)) +
@@ -279,6 +281,7 @@ ggsave(filename = paste0(dir_destination, "dc_zipcode_polygons_MEDICAID_RECIPIEN
        dpi = "screen", 
        scale = 1.5)
 
+# *************************************************************
 # Zipcode: POP_2010
 ggplot(poly_plot_data) +
   geom_sf(aes(fill =  POP_2010)) +
