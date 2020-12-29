@@ -254,3 +254,39 @@ ggsave(filename = paste0(dir_destination, "dc_zipcode_polygons.png"),
        width = 8, height = 8, 
        dpi = "screen", 
        scale = 1.5)
+
+# Zipcode: Uninsured Population
+ggplot(poly_plot_data) +
+  geom_sf(aes(fill =  UNINSURED_POPULATION)) +
+  # geom_sf_label(aes(label = NAME)) +
+  labs(x = 'Lon', y = 'Lat')
+
+# save the image
+ggsave(filename = paste0(dir_destination, "dc_zipcode_polygons_uninsured_population.png"), 
+       width = 8, height = 8, 
+       dpi = "screen", 
+       scale = 1.5)
+
+# Zipcode: MEDICAID_RECIPIENT
+ggplot(poly_plot_data) +
+  geom_sf(aes(fill =  MEDICAID_RECIPIENT)) +
+  # geom_sf_label(aes(label = NAME)) +
+  labs(x = 'Lon', y = 'Lat')
+
+# save the image
+ggsave(filename = paste0(dir_destination, "dc_zipcode_polygons_MEDICAID_RECIPIENT.png"), 
+       width = 8, height = 8, 
+       dpi = "screen", 
+       scale = 1.5)
+
+# Zipcode: POP_2010
+ggplot(poly_plot_data) +
+  geom_sf(aes(fill =  POP_2010)) +
+  # geom_sf_label(aes(label = NAME)) +
+  labs(x = 'Lon', y = 'Lat')
+
+# save the image
+ggsave(filename = paste0(dir_destination, "dc_zipcode_polygons_POP_2010.png"), 
+       width = 8, height = 8, 
+       dpi = "screen", 
+       scale = 1.5)
