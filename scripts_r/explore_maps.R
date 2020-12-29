@@ -9,6 +9,8 @@ library(tidyverse)
 library(magrittr)
 library(DBI)
 # library(RPostgreSQL)
+# library(rpostgis)
+library(sf)
 
 # Source project functions:
 source('~/ProblemXSolutions.com/DataProjects/DC_Crime/project_crime/scripts_r/project_functions_db.R')
@@ -39,10 +41,216 @@ db_tables <- c('charter_school_points',
               'building_permits',
               'construction_permits')
 
-# Get the column names for each table
-table_col_names_list <- list()
-db_data_list <- list()
-for (i in 1:length(db_tables)){
-  table_col_names_list[[i]] <- dbListFields(conn = pg_connect(), name = db_tables[i])
-  db_data_list[[i]] <- tbl(pg_connect(), db_tables[i])
-}
+db_tables_polygons <- db_tables[str_detect(string = db_tables, pattern = "polygon")]
+db_tables_points <- db_tables[str_detect(string = db_tables, pattern = "points|permits")]
+
+# Get the column names for each table and establish a connection to each data for querying the data
+db_polygons <- bulk_table_connections(connection = pg_connect(),
+                                      db_tables = db_tables_polygons)
+db_points <- bulk_table_connections(connection = pg_connect(), 
+                                    db_tables = db_tables_points)
+
+# *********************************************************************************************
+# Explore Polygon Datasets first
+# db_polygons$column_names
+# db_polygons$tables
+# *********************************************************************************************
+
+# Explore 1st element: DC Polygon.
+# Display as is contained in the variable
+db_polygons$tables[[1]]
+
+# Display the Table information from the database side
+rpostgis::dbTableInfo(conn = pg_connect(), 
+                      name = db_tables_polygons[1])
+
+# Get the geometry data from the database
+poly_plot_data <- rpostgis::pgGetGeom(conn = pg_connect(), 
+                    name = db_tables_polygons[1], 
+                    geom = "geometry")
+
+# Convert into sf object
+data = st_as_sf(poly_plot_data)
+
+# plot using sf object and ggplot2
+ggplot(data) +
+  geom_sf() +
+  geom_sf_label(aes(label = CITY_NAME)) +
+  labs(x = 'Lon', y = 'Lat')
+
+# save the image
+ggsave(paste0(dir_destination, "dc_polygon.png"), 
+       width = 6, height = 6, dpi = "screen")
+
+# *********************************************************************************************
+
+# Explore 2nd element: Police Districts
+# Display as is contained in the variable
+i_element <- 2
+db_polygons$tables[[i_element]]
+
+# Display the Table information from the database side
+rpostgis::dbTableInfo(conn = pg_connect(), 
+                      name = db_tables_polygons[i_element])
+
+# Get the geometry data from the database and 
+# convert into sf object
+poly_plot_data <- 
+  rpostgis::pgGetGeom(conn = pg_connect(), 
+                      name = db_tables_polygons[i_element], 
+                      geom = "geometry") %>% 
+  st_as_sf(poly_plot_data)
+
+ggplot(poly_plot_data) +
+  geom_sf(aes(fill = NAME)) +
+  geom_sf_label(aes(label = NAME)) +
+  labs(x = 'Lon', y = 'Lat')
+
+# save the image
+ggsave(filename = paste0(dir_destination, "dc_pd_polygons.png"), 
+       width = 6, height = 6, 
+       dpi = "screen", 
+       scale = 1.5)
+
+
+# *********************************************************************************************
+
+# Explore: Police Service Areas
+# Display as is contained in the variable
+i_element <- 3
+db_polygons$tables[[i_element]]
+
+db_polygons$tables[[i_element]] %>% 
+  select(OBJECTID) %>% 
+  distinct %>% 
+  collect
+
+# Display the Table information from the database side
+rpostgis::dbTableInfo(conn = pg_connect(), 
+                      name = db_tables_polygons[i_element])
+
+# Get the geometry data from the database and 
+# convert into sf object
+poly_plot_data <- 
+  rpostgis::pgGetGeom(conn = pg_connect(), 
+                      name = db_tables_polygons[i_element], 
+                      geom = "geometry") %>% 
+  st_as_sf(poly_plot_data)
+
+ggplot(poly_plot_data) +
+  geom_sf(aes(fill = factor(DISTRICT))) +
+  geom_sf_label(aes(label = NAME)) +
+  labs(x = 'Lon', y = 'Lat')
+
+# save the image
+ggsave(filename = paste0(dir_destination, "dc_psa_polygons.png"), 
+       width = 8, height = 8, 
+       dpi = "screen", 
+       scale = 1.5)
+
+
+# *********************************************************************************************
+
+# Explore: Wards
+# Display as is contained in the variable
+# URL: https://opendata.dc.gov/datasets/ward-from-2012
+i_element <- 4
+db_polygons$tables[[i_element]]
+
+
+# Display the Table information from the database side
+rpostgis::dbTableInfo(conn = pg_connect(), 
+                      name = db_tables_polygons[i_element])
+
+# evaluate numeric columns that are displayed as text
+cols_numeric_eval <- db_polygons$tables[[i_element]] %>% 
+  select(15:78) %>%
+  collect
+
+# double/numeric valued fields
+cols_numeric_eval %>% 
+  select(contains(c("MEDIAN_", "_RATE", "PCT_"))) %>% 
+  view()
+
+# int valued fields
+cols_numeric_eval %>% 
+  select(!contains(c("MEDIAN_", "_RATE", "PCT_"))) %>% 
+  view()
+
+
+# Get the geometry data from the database and 
+# convert into sf object
+poly_plot_data <- 
+  rpostgis::pgGetGeom(conn = pg_connect(), 
+                      name = db_tables_polygons[i_element], 
+                      geom = "geometry") %>% 
+  st_as_sf(poly_plot_data)
+
+ggplot(poly_plot_data) +
+  geom_sf(aes(fill = NAME)) +
+  geom_sf_label(aes(label = NAME)) +
+  labs(x = 'Lon', y = 'Lat')
+
+# save the image
+ggsave(filename = paste0(dir_destination, "dc_ward_polygons.png"), 
+       width = 6, height = 6, 
+       dpi = "screen", 
+       scale = 1.5)
+
+# # COMMENTED OUT TO PREVENT RUNNING THE WHOLE PROCESS
+# for(i in 15:78){
+#   tmp_col_name <- colnames(poly_plot_data[i])[1]
+#   if(str_detect(string = tmp_col_name, pattern = "((MEDIAN|PCT)_)|(_RATE)")){
+#     poly_plot_data[[i]] %<>% as.numeric()
+#   }else{
+#     poly_plot_data[[i]] %<>% as.integer()
+#   }
+#   
+#   ggplot(poly_plot_data) +
+#     geom_sf(aes_string(fill = tmp_col_name)) +
+#     geom_sf_label(aes(label = NAME)) +
+#     labs(x = 'Lon', y = 'Lat')
+#   
+#   ggsave(filename = paste0(dir_destination, 
+#                            'dc_ward_polygons_', 
+#                            tmp_col_name,'.png'), 
+#          width = 6, height = 6, 
+#          dpi = "screen", 
+#          scale = 1.5)
+# }
+
+
+# *********************************************************************************************
+
+# Explore: Zip Code
+# Display as is contained in the variable
+i_element <- 5
+db_polygons$tables[[i_element]]
+
+db_polygons$tables[[i_element]] %>% 
+  select(OBJECTID) %>% 
+  distinct %>% 
+  collect
+
+# Display the Table information from the database side
+rpostgis::dbTableInfo(conn = pg_connect(), 
+                      name = db_tables_polygons[i_element])
+
+# Get the geometry data from the database and 
+# convert into sf object
+poly_plot_data <- 
+  rpostgis::pgGetGeom(conn = pg_connect(), 
+                      name = db_tables_polygons[i_element], 
+                      geom = "geometry") %>% 
+  st_as_sf(poly_plot_data)
+
+ggplot(poly_plot_data) +
+  geom_sf() +
+  # geom_sf_label(aes(label = NAME)) +
+  labs(x = 'Lon', y = 'Lat')
+
+# save the image
+ggsave(filename = paste0(dir_destination, "dc_zipcode_polygons.png"), 
+       width = 8, height = 8, 
+       dpi = "screen", 
+       scale = 1.5)
