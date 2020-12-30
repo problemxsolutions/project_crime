@@ -26,7 +26,7 @@ download.file(url = paste0('https://www.arcgis.com/sharing/rest/content/items/',
               destfile = './data/metadata_dc_metro_bus_stops.html')
 
 # Read in the document
-metadata_file <- read_html('./data/metadata_dc_crime_2015.html')
+metadata_file <- read_html('./data/metadata_dc_metro_bus_stops.html')
 
 # Process the document after inspecting the html and key words that 
 # define the columns.
@@ -98,7 +98,7 @@ metadata_df <- metadata_list %>% bind_rows()
 
 # Write out the processed metadata results for easy reference.
 write_csv(x = metadata_df, 
-          file = "./data//crime_metadata_processed.csv")
+          file = "./data/metro_bus_stop_metadata_processed.csv")
 
 # Remove all variables
 rm(metadata_colnames, metadata_file, metadata_list, 
