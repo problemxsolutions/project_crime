@@ -95,6 +95,7 @@ metadata_list <-
 
 # Aggregate the results
 metadata_df <- metadata_list %>% bind_rows()
+metadata_df %<>% distinct
 
 # Write out the processed metadata results for easy reference.
 write_csv(x = metadata_df, 
