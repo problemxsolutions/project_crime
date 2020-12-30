@@ -99,7 +99,7 @@ poly_plot_data <-
   rpostgis::pgGetGeom(conn = pg_connect(), 
                       name = db_tables_polygons[i_element], 
                       geom = "geometry") %>% 
-  st_as_sf(poly_plot_data)
+  st_as_sf()
 
 ggplot(poly_plot_data) +
   geom_sf(aes(fill = NAME)) +
@@ -135,7 +135,7 @@ poly_plot_data <-
   rpostgis::pgGetGeom(conn = pg_connect(), 
                       name = db_tables_polygons[i_element], 
                       geom = "geometry") %>% 
-  st_as_sf(poly_plot_data)
+  st_as_sf()
 
 ggplot(poly_plot_data) +
   geom_sf(aes(fill = factor(DISTRICT))) +
@@ -184,7 +184,7 @@ poly_plot_data <-
   rpostgis::pgGetGeom(conn = pg_connect(), 
                       name = db_tables_polygons[i_element], 
                       geom = "geometry") %>% 
-  st_as_sf(poly_plot_data)
+  st_as_sf()
 
 ggplot(poly_plot_data) +
   geom_sf(aes(fill = NAME)) +
@@ -242,7 +242,7 @@ poly_plot_data <-
   rpostgis::pgGetGeom(conn = pg_connect(), 
                       name = db_tables_polygons[i_element], 
                       geom = "geometry") %>% 
-  st_as_sf(poly_plot_data)
+  st_as_sf()
 
 ggplot(poly_plot_data) +
   geom_sf() +
