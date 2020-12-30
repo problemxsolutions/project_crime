@@ -3,7 +3,7 @@
 # RStudio: Version 1.3.1093
 
 # For the full tutorial, please reference URL: 
-# https://problemxsolutions.com/data-project/crime/criminal-analysis-data-exploration-part-#/
+# https://problemxsolutions.com/data-project/crime/criminal-analysis-data-exploration-part-2a/
 
 library(tidyverse)
 library(magrittr)
@@ -42,13 +42,13 @@ db_tables <- c('charter_school_points',
               'construction_permits')
 
 db_tables_polygons <- db_tables[str_detect(string = db_tables, pattern = "polygon")]
-db_tables_points <- db_tables[str_detect(string = db_tables, pattern = "points|permits")]
+# db_tables_points <- db_tables[str_detect(string = db_tables, pattern = "points|permits")]
 
 # Get the column names for each table and establish a connection to each data for querying the data
 db_polygons <- bulk_table_connections(connection = pg_connect(),
                                       db_tables = db_tables_polygons)
-db_points <- bulk_table_connections(connection = pg_connect(), 
-                                    db_tables = db_tables_points)
+# db_points <- bulk_table_connections(connection = pg_connect(), 
+#                                     db_tables = db_tables_points)
 
 # *********************************************************************************************
 # Explore Polygon Datasets first
