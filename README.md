@@ -28,6 +28,7 @@ Focuses on real estate, permit (building and construction) and economic data.
 
 ## Data Storage
 These two post describe creating a PostgreSQL/PostGIS database to store all the data for this project.
+
 ### PostgreSQL 
 * https://problemxsolutions.com/project/crime/criminal-analysis-data-storage/
 
@@ -36,3 +37,23 @@ These two post describe creating a PostgreSQL/PostGIS database to store all the 
 
 ### Elastic Stack
 * coming soon "Data Storage (part 3)"
+
+## Data Exploration
+This portion of the project will look at each dataset loaded into the database and explore what is provided and identify any transformations.
+
+### Introduction and Plan for Exploratory Data Analysis
+* https://problemxsolutions.com/data-project/crime/criminal-analysis-data-exploration/
+
+### Part 1: Criminal Data
+* https://problemxsolutions.com/data-project/crime/criminal-analysis-data-exploration-part-1/
+
+### Part 2: Map Data
+* Polygon Datasets: https://problemxsolutions.com/data-project/crime/criminal-analysis-data-exploration-part-2a/
+* Point Datasets: Coming Soon
+
+### Part 3: Weather, Solar, Lunar Data
+* Coming Soon
+
+### Part 4: Economics Data
+* Coming Soon
+
