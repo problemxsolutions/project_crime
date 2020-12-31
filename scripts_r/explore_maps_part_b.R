@@ -58,24 +58,14 @@ police_districts_polygons <-
 
 # Explore 1st element: DC Police Stations
 # Display as is contained in the variable
-db_points$tables[[1]] %>% view
-
-db_points$tables[[i_element]] %>%  summarise(count = n())
-
-# Display the Table information from the database side
-rpostgis::dbTableInfo(conn = pg_connect(), 
-                      name = db_tables_points[1])
-
-# Get the geometry data from the database
-point_plot_data <- rpostgis::pgGetGeom(conn = pg_connect(), 
-                                      name = db_tables_points[1], 
-                                      geom = "geometry")
-
-# Convert into sf object
-data = st_as_sf(point_plot_data)
+i_element <-  1
+point_plot_data <- 
+  data_exploration_spatial_initial(connection = pg_connect(), 
+                                   table_name = db_tables_points[i_element], 
+                                   virtual_data = db_points$tables[[i_element]])
 
 # plot using sf object and ggplot2
-ggplot(data) +
+ggplot(point_plot_data) +
   geom_sf(data = police_districts_polygons, 
           aes(fill = NAME), inherit.aes = F) +
   geom_sf() +
@@ -90,21 +80,10 @@ ggsave(paste0(dir_destination, "dc_police_station.png"),
 # Explore : DC Public Schools
 # Display as is contained in the variable
 i_element <- 2
-db_points$tables[[i_element]] %>% view
-
-db_points$tables[[i_element]] %>%  summarise(count = n())
-
-# Display the Table information from the database side
-rpostgis::dbTableInfo(conn = pg_connect(), 
-                      name = db_tables_points[i_element])
-
-# Get the geometry data from the database and 
-# convert into sf object
 point_plot_data <- 
-  rpostgis::pgGetGeom(conn = pg_connect(), 
-                      name = db_tables_points[i_element], 
-                      geom = "geometry") %>% 
-  st_as_sf()
+  data_exploration_spatial_initial(connection = pg_connect(), 
+                                   table_name = db_tables_points[i_element], 
+                                   virtual_data = db_points$tables[[i_element]])
 
 ggplot(point_plot_data) +
   geom_sf(data = police_districts_polygons, 
@@ -124,21 +103,10 @@ ggsave(filename = paste0(dir_destination, "dc_pub_schools.png"),
 # Explore : DC Charter Schools
 # Display as is contained in the variable
 i_element <- 3
-db_points$tables[[i_element]] %>% view
-
-db_points$tables[[i_element]] %>%  summarise(count = n())
-
-# Display the Table information from the database side
-rpostgis::dbTableInfo(conn = pg_connect(), 
-                      name = db_tables_points[i_element])
-
-# Get the geometry data from the database and 
-# convert into sf object
 point_plot_data <- 
-  rpostgis::pgGetGeom(conn = pg_connect(), 
-                      name = db_tables_points[i_element], 
-                      geom = "geometry") %>% 
-  st_as_sf()
+  data_exploration_spatial_initial(connection = pg_connect(), 
+                                   table_name = db_tables_points[i_element], 
+                                   virtual_data = db_points$tables[[i_element]])
 
 ggplot(point_plot_data) +
   geom_sf(data = police_districts_polygons, 
@@ -157,21 +125,10 @@ ggsave(filename = paste0(dir_destination, "dc_charter_schools.png"),
 # Explore : DC Charter Schools
 # Display as is contained in the variable
 i_element <- 4
-db_points$tables[[i_element]] %>% view
-
-db_points$tables[[i_element]] %>%  summarise(count = n())
-
-# Display the Table information from the database side
-rpostgis::dbTableInfo(conn = pg_connect(), 
-                      name = db_tables_points[i_element])
-
-# Get the geometry data from the database and 
-# convert into sf object
 point_plot_data <- 
-  rpostgis::pgGetGeom(conn = pg_connect(), 
-                      name = db_tables_points[i_element], 
-                      geom = "geometry") %>% 
-  st_as_sf()
+  data_exploration_spatial_initial(connection = pg_connect(), 
+                                   table_name = db_tables_points[i_element], 
+                                   virtual_data = db_points$tables[[i_element]])
 
 ggplot(point_plot_data) +
   geom_sf(data = police_districts_polygons, 
@@ -191,21 +148,10 @@ ggsave(filename = paste0(dir_destination, "dc_summer_schools.png"),
 # Explore : DC Transformation Schools
 # Display as is contained in the variable
 i_element <- 5
-db_points$tables[[i_element]] %>% view
-
-db_points$tables[[i_element]] %>%  summarise(count = n())
-
-# Display the Table information from the database side
-rpostgis::dbTableInfo(conn = pg_connect(), 
-                      name = db_tables_points[i_element])
-
-# Get the geometry data from the database and 
-# convert into sf object
 point_plot_data <- 
-  rpostgis::pgGetGeom(conn = pg_connect(), 
-                      name = db_tables_points[i_element], 
-                      geom = "geometry") %>% 
-  st_as_sf()
+  data_exploration_spatial_initial(connection = pg_connect(), 
+                                   table_name = db_tables_points[i_element], 
+                                   virtual_data = db_points$tables[[i_element]])
 
 ggplot(point_plot_data) +
   geom_sf(data = police_districts_polygons, 
@@ -225,22 +171,10 @@ ggsave(filename = paste0(dir_destination, "dc_transform_schools.png"),
 # Explore : DC Metro Bus Stops
 # Display as is contained in the variable
 i_element <- 6
-db_points$tables[[i_element]] %>% view
-
-db_points$tables[[i_element]] %>%  summarise(count = n())
-
-# Display the Table information from the database side
-rpostgis::dbTableInfo(conn = pg_connect(), 
-                      name = db_tables_points[i_element])
-
-# Get the geometry data from the database and 
-# convert into sf object
 point_plot_data <- 
-  rpostgis::pgGetGeom(conn = pg_connect(), 
-                      name = db_tables_points[i_element], 
-                      geom = "geometry") %>% 
-  st_as_sf()
-
+  data_exploration_spatial_initial(connection = pg_connect(), 
+                                   table_name = db_tables_points[i_element], 
+                                   virtual_data = db_points$tables[[i_element]])
 
 ggplot(point_plot_data) +
   geom_sf(data = police_districts_polygons, 
@@ -289,22 +223,10 @@ ggsave(filename = paste0(dir_destination, "dc_metro_bus_stops_reduced.png"),
 # Explore : DC Metro Stations
 # Display as is contained in the variable
 i_element <- 7
-db_points$tables[[i_element]] %>% view
-
-db_points$tables[[i_element]] %>%  summarise(count = n())
-
-# Display the Table information from the database side
-rpostgis::dbTableInfo(conn = pg_connect(), 
-                      name = db_tables_points[i_element])
-
-# Get the geometry data from the database and 
-# convert into sf object
 point_plot_data <- 
-  rpostgis::pgGetGeom(conn = pg_connect(), 
-                      name = db_tables_points[i_element], 
-                      geom = "geometry") %>% 
-  st_as_sf()
-
+  data_exploration_spatial_initial(connection = pg_connect(), 
+                                   table_name = db_tables_points[i_element], 
+                                   virtual_data = db_points$tables[[i_element]])
 
 ggplot(point_plot_data) +
   geom_sf(data = police_districts_polygons, 
@@ -325,21 +247,10 @@ ggsave(filename = paste0(dir_destination, "dc_metro_stations.png"),
 # Explore : DC Building Permits
 # Display as is contained in the variable
 i_element <- 8
-db_points$tables[[i_element]] %>% view
-
-db_points$tables[[i_element]] %>%  summarise(count = n())
-
-# Display the Table information from the database side
-rpostgis::dbTableInfo(conn = pg_connect(), 
-                      name = db_tables_points[i_element])
-
-# Get the geometry data from the database and 
-# convert into sf object
 point_plot_data <- 
-  rpostgis::pgGetGeom(conn = pg_connect(), 
-                      name = db_tables_points[i_element], 
-                      geom = "geometry") %>% 
-  st_as_sf()
+  data_exploration_spatial_initial(connection = pg_connect(), 
+                                   table_name = db_tables_points[i_element], 
+                                   virtual_data = db_points$tables[[i_element]])
 
 point_plot_data %>% select(APPLICATION_STATUS_NAME) %>% distinct
 
@@ -438,27 +349,16 @@ ggplot(dc_ward_supplemental_electrical) +
 # Explore : DC Construction Permits
 # Display as is contained in the variable
 i_element <- 9
-db_points$tables[[i_element]] %>% view
-
-db_points$tables[[i_element]] %>%  select(OBJECTID) %>% collect
-
-# Display the Table information from the database side
-rpostgis::dbTableInfo(conn = pg_connect(), 
-                      name = db_tables_points[i_element])
+point_plot_data <- 
+  data_exploration_spatial_initial(connection = pg_connect(), 
+                                   table_name = db_tables_points[i_element], 
+                                   virtual_data = db_points$tables[[i_element]])
 
 db_points$tables[[i_element]] %>%  
   select(STATUS) %>% 
   group_by(STATUS) %>% 
   summarise(count = n()) %>% 
   collect()
-
-# Get the geometry data from the database and 
-# convert into sf object
-point_plot_data <- 
-  rpostgis::pgGetGeom(conn = pg_connect(), 
-                      name = db_tables_points[i_element], 
-                      geom = "geometry") %>% 
-  st_as_sf()
 
 # Add a year column
 point_plot_data %<>% 
