@@ -35,43 +35,85 @@ pg_connect <- function(db = 'project_crime',
   
   return(
     DBI::dbConnect(RPostgres::Postgres(), 
-                        dbname = db, 
-                        host=host_db,
-                        port=db_port,
-                        user=db_user, 
-                        password=db_password)  
+                   dbname = db, 
+                   host=host_db,
+                   port=db_port,
+                   user=db_user, 
+                   password=db_password)  
   )  
 }
 
 
 bulk_table_connections <- function(connection = pg_connect(), 
                                    db_tables){
+  #' @description 
+  #' Connect to desired database tables to get exploratory information.  
+  #' Specify arguments if deviating from defaults.
+  #' 
+  #' @param  connection DBIConnection. DBI connection to a database.  
+  #' Default value is `pg_connect()`, which is defined in a separate function
+  #' @param  db_tables Vector. Vector of strings that correspond to the name 
+  #' values of tables in the connecting database
+  #' 
+  #' @return A list that contains a 2 sub-lists.  The first list contains the column names 
+  #' associated with each table provided by the `db_tables` parameter connection.  The  
+  #' second is a list of tables via connection, which is not an extract of all data in 
+  #' each table, but a virtual connection.
+  
+  table_col_names_list <- list()
+  db_data_list <- list()
+  for (i in 1:length(db_tables)){
+    table_col_names_list[[i]] <- dbListFields(conn = connection, 
+                                              name = db_tables[i])
+    db_data_list[[i]] <- tbl(pg_connect(), db_tables[i])
+  }
+  names(table_col_names_list) <- db_tables
+  names(db_data_list) <- db_tables
+  
+  return(
+    list(column_names = table_col_names_list,
+         tables = db_data_list)
+  )
+}
+
+data_exploration_spatial_initial <- 
+  function(connection = pg_connect(), 
+           table_name, 
+           virtual_data){
     #' @description 
-    #' Connect to desired database tables to get exploratory information.  
-    #' Specify arguments if deviating from defaults.
+    #' Connect to desired database tables to get exploratory information.
+    #' Process spatial tables and output a simple features object
     #' 
     #' @param  connection DBIConnection. DBI connection to a database.  
     #' Default value is `pg_connect()`, which is defined in a separate function
-    #' @param  db_tables Vector. Vector of strings that correspond to the name 
-    #' values of tables in the connecting database
+    #' @param  table_name String. String value of desired table name in the 
+    #' connecting database
+    #' @param  virtual_data Table Connection Object. Contains the virtual connection
+    #' to the specified table in the database
     #' 
-    #' @return A list that contains a 2 sub-lists.  The first list contains the column names 
-    #' associated with each table provided by the `db_tables` parameter connection.  The  
-    #' second is a list of tables via connection, which is not an extract of all data in 
-    #' each table, but a virtual connection.
+    #' @return Prints some preliminary exploratory views of the desired table and
+    #' returns a simple feature object of the desired data.
+
+    print(virtual_data)
+    # virtual_data %>% view
     
-    table_col_names_list <- list()
-    db_data_list <- list()
-    for (i in 1:length(db_tables)){
-      table_col_names_list[[i]] <- dbListFields(conn = connection, 
-                                                name = db_tables[i])
-      db_data_list[[i]] <- tbl(pg_connect(), db_tables[i])
-    }
-    names(table_col_names_list) <- db_tables
-    names(db_data_list) <- db_tables
+    tmp_rc <- virtual_data %>%  
+      summarise(count = n()) %>% 
+      pull()
     
-    return(
-      list(column_names = table_col_names_list,
-           tables = db_data_list)
-    )
+    print(paste0("Total Rows: ", tmp_rc))
+    
+    # Display the Table information from the database side
+    table_info_output <- rpostgis::dbTableInfo(conn = connection, 
+                                               name = table_name)
+    print(table_info_output)
+    
+    # Get the geometry data from the database and 
+    # convert into sf object
+    spatial_data <- 
+      rpostgis::pgGetGeom(conn = connection, 
+                          name = table_name, 
+                          geom = "geometry") %>% 
+      st_as_sf()
+    return(spatial_data)
   }
