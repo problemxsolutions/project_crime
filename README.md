@@ -49,7 +49,7 @@ This portion of the project will look at each dataset loaded into the database a
 
 ### Part 2: Map Data
 * Polygon Datasets: https://problemxsolutions.com/data-project/crime/criminal-analysis-data-exploration-part-2a/
-* Point Datasets: Coming Soon
+* Point Datasets: https://problemxsolutions.com/data-project/crime/criminal-analysis-data-exploration-part-2b/
 
 ### Part 3: Weather, Solar, Lunar Data
 * Coming Soon
