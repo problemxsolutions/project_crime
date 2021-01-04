@@ -10,6 +10,10 @@ This post describes the project and lays out an initial project plan to help str
 ## Data Search
 The next posts detailing "Data Search" describe each of the parts of the project that I would like to gather supplemental data to mix in and analyze with my primary source of criminal activity data.  
 
+### Part 0 
+Focuses on Criminal Activity Data.  This is the cornerstone of the project, meaning there is no project without criminal activity data per the project plan.
+* https://problemxsolutions.com/project/crime/criminal-analysis-data-search-part-0/
+
 ### Part 1 
 Focuses on Map Data.  This provides spatial polygons to structure the analysis and provide visual context.  The spatial regions referenced in the criminal activity data as well so matching up the data sources should not require much transformation.
 * https://problemxsolutions.com/project/crime/criminal-analysis-data-search-part-1/
