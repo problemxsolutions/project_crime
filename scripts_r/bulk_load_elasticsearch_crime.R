@@ -23,6 +23,45 @@ library(elastic)
 # Source project functions:
 source('~/ProblemXSolutions.com/DataProjects/DC_Crime/project_crime/scripts_r/project_functions_db.R')
 
+# **************************************************************************************************
+### ElasticSearch connection and admin tasks
+
+# Tailor the connection configurations to meet your needs.
+# If you have not modified the ElasticSearch settings then 
+# the default settings should work.
+es_connect <- connect()
+
+# ElasticSearch Documentation on the Geo-Point and Date formats/mappings
+# Date:
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/date.html
+# Geo-Point:
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/geo-point.html
+
+index_body <- '{
+   "mappings" : {
+     "properties" : {
+       "location" : { "type" : "geo_point"},
+        "datetime" : {
+            "type" : "date", 
+            "format" : "yyyy-MM-dd HH:mm:ss"
+         }
+      }
+   }
+}'
+
+index_name <- 'crime_data'
+
+# Delete index if it exists or you want to start over.
+# index_delete(conn = es_connect, 
+#              index = index_name)
+
+# Create index at the given connection for the given
+# index name and specified data mappings.
+index_create(conn = es_connect, 
+             index = index_name, 
+             body = index_body)
+
+# **************************************************************************************************
 # List database tables
 # dbListTables(conn = pg_connect())
 # **************************************************************************************************
@@ -54,36 +93,6 @@ table_col_names_subset <-
 query_select <- 
    str_c(table_col_names_subset, collapse = '", "')
 
-# Tailor the connection configurations to meet your needs.
-# If you have not modified the ElasticSearch settings then 
-# the default settings should work.
-es_connect <- connect()
-
-# ElasticSearch Documentation on the Geo-Poin and Date formats/mappings
-# Date:
-# https://www.elastic.co/guide/en/elasticsearch/reference/current/date.html
-# Geo-Point:
-# https://www.elastic.co/guide/en/elasticsearch/reference/current/geo-point.html
-index_body <- '{
-   "mappings" : {
-     "properties" : {
-       "location" : { "type" : "geo_point"},
-        "datetime" : {
-            "type" : "date", 
-            "format" : "yyyy-MM-dd HH:mm:ss"
-         }
-      }
-   }
-}'
-
-index_name <- 'crime_data'
-
-# Delete index if it exists or you want to start over.
-# index_delete(conn = es_connect, index = index_name)
-
-# Create index at the given connection for the given
-# index name and specified data mappings.
-# index_create(conn = es_connect, index = index_name, body = index_body)
 
 # Bulk loading data by year.  This reduces the amount of data I have in-memory
 crime_yr <- c(2009:2020)
