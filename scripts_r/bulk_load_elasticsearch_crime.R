@@ -3,7 +3,7 @@
 # RStudio: Version 1.3.1093
 
 # For the full tutorial, please reference URL: 
-# https://problemxsolutions.com/data-project/crime/criminal-analysis-data-exploration-part-#/
+# https://problemxsolutions.com/data-project/crime/criminal-analysis-data-search-part-3/
 
 library(tidyverse)
 library(magrittr)
@@ -54,6 +54,9 @@ table_col_names_subset <-
 query_select <- 
    str_c(table_col_names_subset, collapse = '", "')
 
+# Tailor the connection configurations to meet your needs.
+# If you have not modified the ElasticSearch settings then 
+# the default settings should work.
 es_connect <- connect()
 
 # ElasticSearch Documentation on the Geo-Poin and Date formats/mappings
