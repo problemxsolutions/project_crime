@@ -78,7 +78,7 @@ data$features[[1]] %>% str
 # Remove the data we no longer need.  
 # This is valid if you use the GeoJSON method as well.
 rm(data0, query_end_url, crime_data_json)
-write_csv(x = crime_table0, file = "../data/crime/CY2009_DC_CRIME.csv")
+write_csv(x = data, file = "../data/crime/CY2009_DC_CRIME.csv")
 
 # ****************************************************************
 
