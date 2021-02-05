@@ -1,7 +1,7 @@
 # project_crime
 Project focused on the workflow to analyze criminal activity data.
 
-This is a tri-lingual project, meaning I will be demonstrating and posting scripts for R, Julia and Python.  In initial published posts have been written for R but as I translate and create the reciprocal scripts in Julia and Python, I will be posting those scripts to this repo and updating each of the published posts to reflect.
+This is a tri-lingual project, meaning I will be demonstrating and posting scripts for R, Julia and Python.  In initial published posts have been written for R but as I translate and create the reciprocal scripts in Julia and Python, I will be posting those scripts to this repo and updating each of the published posts to reflect.  Next to each section title, I will denote ` (R, Julia, Python, etc)` to indicate what is currently available.
 
 For the associated posts providing context and details for the scripts in this project, please refer to these:
 
@@ -47,13 +47,13 @@ The first two post describe creating a PostgreSQL/PostGIS database to store all 
 ## Data Exploration
 This portion of the project will look at each dataset loaded into the database and explore what is provided and identify any transformations.
 
-### Introduction and Plan for Exploratory Data Analysis
+### Introduction and Plan for Exploratory Data Analysis 
 * https://problemxsolutions.com/data-project/crime/criminal-analysis-data-exploration/
 
-### Part 1: Criminal Data
+### Part 1: Criminal Data  (R)
 * https://problemxsolutions.com/data-project/crime/criminal-analysis-data-exploration-part-1/
 
-### Part 2: Map Data
+### Part 2: Map Data (R)
 * Polygon Datasets: https://problemxsolutions.com/data-project/crime/criminal-analysis-data-exploration-part-2a/
 * Point Datasets: https://problemxsolutions.com/data-project/crime/criminal-analysis-data-exploration-part-2b/
 
