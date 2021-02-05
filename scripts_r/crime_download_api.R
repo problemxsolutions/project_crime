@@ -4,6 +4,8 @@
 
 # For the full tutorial, please reference URL: 
 # https://problemxsolutions.com/project/crime/criminal-analysis-planning/
+# https://problemxsolutions.com/project/crime/criminal-analysis-data-search-part-0/
+
 
 # These are the resources for Washington DC Criminal Data
 # URL: https://opendata.dc.gov/search?collection=Dataset&q=Crime
