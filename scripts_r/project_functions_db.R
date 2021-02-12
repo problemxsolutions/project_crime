@@ -14,7 +14,8 @@ pg_connect <- function(db = 'project_crime',
                        host_db = 'localhost', 
                        db_port = '5432',
                        db_user = 'analyst',
-                       db_password = 'mypassword'){
+                       db_password = 'mypassword',
+                       method = 1){
   
   #' @description 
   #' Connect to desired PostgreSQL database using pg_connect().  Specify arguments if deviating from defaults.
@@ -26,6 +27,13 @@ pg_connect <- function(db = 'project_crime',
   #' analysis project is 'analyst'  
   #' @param  db_password String. The password for the user connecting to the database.  
   #' Default value for my criminal analysis project is 'mypassword'
+  #' @param  method Integer. Indicates which method to use to create a connection.  
+  #' Default value for my criminal analysis project is method 1.
+  #' method 1: uses DBI and RPostgres pacakages.  Did not work over a network.
+  #' method 2: uses RPostgres and odbc pacakages. Worked over network
+  #' method 3: uses odbc and RPostgreSQL pacakages. Worked over network
+  #' method 4: uses the RPostgres pacakage. Worked over network
+  #' method 5: uses odbc and RPostgres pacakages. Worked over network
   #' 
   #' @return DBI connection to the PostgreSQL database.  
   #' dbConnect() returns an S4 object that inherits from DBIConnection. 
@@ -33,14 +41,47 @@ pg_connect <- function(db = 'project_crime',
   #' A format() method is defined for the connection object. 
   #' It returns a string that consists of a single line of text.
   
-  return(
-    DBI::dbConnect(RPostgres::Postgres(), 
-                   dbname = db, 
-                   host=host_db,
-                   port=db_port,
-                   user=db_user, 
-                   password=db_password)  
-  )  
+  if(method == 1){
+    con <- DBI::dbConnect(drive = RPostgres::Postgres(), 
+                          dbname       = db, 
+                          host         = host_db,
+                          port         = db_port,
+                          user         = db_user, 
+                          password     = db_password)  
+  }else if(method == 2){
+    con <- RPostgres::dbConnect(odbc::odbc(), 
+                                driver   = "PostgreSQL ANSI",
+                                database = db,
+                                UID      = db_user,
+                                PWD      = db_password,
+                                host     = host_db,
+                                port     = db_port)
+  }else if(method == 3){
+    con <- RPostgreSQL::dbConnect(odbc::odbc(), 
+                                  drv       = dbDriver("PostgreSQL"),
+                                  dbname    = db,
+                                  user      = db_user,
+                                  password  = db_password,
+                                  host      = host_db,
+                                  port      = db_port)
+  }else if(method == 4){
+    con <- RPostgres::dbConnect(drv       = RPostgres::Postgres(),
+                                dbname    = db,
+                                user      = db_user,
+                                password  = db_password,
+                                host      = host_db,
+                                port      = db_port)
+  }else if(method == 5){
+    con <- odbc::dbConnect(odbc::odbc(), 
+                           driver   = "PostgreSQL ANSI",
+                           database = db,
+                           uid      = db_user,
+                           pwd      = db_password,
+                           server   = host_db,
+                           port     = db_port)
+  }
+  
+  return( con )
 }
 
 
